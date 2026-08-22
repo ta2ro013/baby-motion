@@ -3,7 +3,13 @@ name = "baby-motion-poc"
 version = "0.1.0"
 description = "Proof of concept for baby motion video analysis"
 requires-python = ">=3.12"
-dependencies = []
+dependencies = [
+    "matplotlib",
+    "numpy",
+    "opencv-python",
+    "pandas",
+    "ultralytics",
+]
 
 [tool.uv]
 package = false
