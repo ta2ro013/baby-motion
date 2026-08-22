@@ -1,0 +1,9 @@
+[project]
+name = "baby-motion-poc"
+version = "0.1.0"
+description = "Proof of concept for baby motion video analysis"
+requires-python = ">=3.12"
+dependencies = []
+
+[tool.uv]
+package = false
