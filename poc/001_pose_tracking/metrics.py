@@ -73,7 +73,11 @@ def _jitter(xy: np.ndarray) -> float | None:
 
 
 def compute_metrics(
-    track: np.ndarray, fps: float, inference_seconds: float, person_counts: list[int]
+    track: np.ndarray,
+    fps: float,
+    inference_seconds: float,
+    person_counts: list[int],
+    target_reset_count: int,
 ) -> dict:
     """追跡結果の自動指標を計算する。
 
@@ -81,7 +85,8 @@ def compute_metrics(
         track (np.ndarray): 形状 (T, 17, 3)。未検出フレームは NaN。T は1以上。
         fps (float): track のフレームレート（間引き後）。
         inference_seconds (float): 推論にかかった合計秒数。
-        person_counts (list[int]): 各フレームで検出された人数。
+        person_counts (list[int]): 各フレームで検出された人数（有効キーポイントが足りる人物のみ）。
+        target_reset_count (int): 見失った後に追跡対象を選び直した回数。
 
     Returns:
         dict: 指標。算出できない値は None。
@@ -102,6 +107,7 @@ def compute_metrics(
         "gap_count": len(gaps),
         "longest_gap_s": round(max(gaps, default=0) / fps, 2),
         "jitter": _jitter(masked_xy(track)),
+        "target_reset_count": target_reset_count,
         "multi_person_rate": _ratio(sum(count >= 2 for count in person_counts), frames),
         "processing_fps": (
             round(frames / inference_seconds, 1) if inference_seconds > 0 else None

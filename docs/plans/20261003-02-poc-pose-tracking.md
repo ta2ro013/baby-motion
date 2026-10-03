@@ -176,7 +176,7 @@ poc/
 **Interfaces:**
 - Produces: `poc/` で `uv run` すると fastapi / mediapipe / ultralytics / cv2 が import できる環境
 
-- [ ] **Step 1: ブランチを確認する**
+- [x] **Step 1: ブランチを確認する**
 
 ```bash
 git branch --show-current
@@ -200,7 +200,7 @@ ldconfig -p | grep libGLESv2
 
 Expected: `libGLESv2.so.2 ... => /usr/lib/x86_64-linux-gnu/libGLESv2.so.2`
 
-- [ ] **Step 3: `poc/pyproject.toml` に PyTorch の CPU インデックスを書く**
+- [x] **Step 3: `poc/pyproject.toml` に PyTorch の CPU インデックスを書く**
 
 ファイル末尾（`[tool.uv]` ブロックの後）に追記する。
 
@@ -215,7 +215,7 @@ url = "https://download.pytorch.org/whl/cpu"
 explicit = true
 ```
 
-- [ ] **Step 4: 依存を追加する**
+- [x] **Step 4: 依存を追加する**
 
 ```bash
 cd poc && uv add fastapi jinja2 mediapipe python-multipart uvicorn torch torchvision
@@ -224,7 +224,7 @@ cd poc && uv add fastapi jinja2 mediapipe python-multipart uvicorn torch torchvi
 Expected: `Resolved ... packages` のあとインストールが完了する。`poc/pyproject.toml` の `dependencies` が次の12個になる（順序・バージョン指定は uv に任せる）:
 `fastapi, jinja2, matplotlib, mediapipe, numpy, opencv-python, pandas, python-multipart, torch, torchvision, ultralytics, uvicorn`
 
-- [ ] **Step 5: `.gitignore` に追記する**
+- [x] **Step 5: `.gitignore` に追記する**
 
 ファイル末尾に追記する。
 
@@ -237,13 +237,13 @@ poc/*/data/*
 *.webm
 ```
 
-- [ ] **Step 6: データディレクトリを作る**
+- [x] **Step 6: データディレクトリを作る**
 
 ```bash
 mkdir -p poc/001_pose_tracking/data poc/001_pose_tracking/templates && touch poc/001_pose_tracking/data/.gitkeep
 ```
 
-- [ ] **Step 7: import を確認する**
+- [x] **Step 7: import を確認する**
 
 ```bash
 cd poc && uv run python -c "
@@ -255,7 +255,7 @@ print(cv2.__version__, mediapipe.__version__, ultralytics.__version__, torch.__v
 
 Expected: 4つのバージョンが表示され、torch は `+cpu` で終わる。エラーなし。
 
-- [ ] **Step 8: コミット**
+- [x] **Step 8: コミット**
 
 ```bash
 git add .gitignore poc/pyproject.toml poc/uv.lock poc/001_pose_tracking/data/.gitkeep docs/plans/20261003-02-poc-pose-tracking.md
@@ -280,7 +280,7 @@ git commit -m "poc: 姿勢推定トラッキング PoC の環境を準備"
   - `estimators.ESTIMATORS: dict[str, type]`（キー `"yolo"`, `"mediapipe"`）。各クラスは `__init__(models_dir: Path)`、`estimate(frame_bgr: np.ndarray, timestamp_ms: int) -> list[np.ndarray]`、`close() -> None` を持つ
   - `data/smoke_person.mp4`（人物あり）、`data/smoke_blank.mp4`（人物なし）
 
-- [ ] **Step 1: `keypoints.py` を書く**
+- [x] **Step 1: `keypoints.py` を書く**
 
 `poc/001_pose_tracking/keypoints.py`
 
@@ -363,7 +363,7 @@ def select_target(
     )
 ```
 
-- [ ] **Step 2: `estimators.py` を書く**
+- [x] **Step 2: `estimators.py` を書く**
 
 `poc/001_pose_tracking/estimators.py`
 
@@ -471,7 +471,7 @@ class MediaPipePoseEstimator:
 ESTIMATORS = {"yolo": YoloPoseEstimator, "mediapipe": MediaPipePoseEstimator}
 ```
 
-- [ ] **Step 3: `make_smoke_videos.py` を書く**
+- [x] **Step 3: `make_smoke_videos.py` を書く**
 
 実動画なしでパイプラインを確認するための合成動画（Ultralytics 同梱のサンプル画像を横にスライドしたものと、真っ黒なもの）を作る。
 
@@ -518,7 +518,7 @@ if __name__ == "__main__":
     main()
 ```
 
-- [ ] **Step 4: 合成動画を作る**
+- [x] **Step 4: 合成動画を作る**
 
 ```bash
 cd poc && uv run python 001_pose_tracking/make_smoke_videos.py
@@ -526,7 +526,7 @@ cd poc && uv run python 001_pose_tracking/make_smoke_videos.py
 
 Expected: `wrote ['smoke_blank.mp4', 'smoke_person.mp4']`
 
-- [ ] **Step 5: 両推定器が共通スキーマで返すことを確認する**
+- [x] **Step 5: 両推定器が共通スキーマで返すことを確認する**
 
 ```bash
 cd poc/001_pose_tracking && uv run python -c "
@@ -551,7 +551,7 @@ Expected（初回はモデルのダウンロードが走る）:
 - `smoke_blank.mp4` は両モデルとも `persons 0 target None`
 - `data/models/` に `yolo26n-pose.pt` と `pose_landmarker_heavy.task` がある
 
-- [ ] **Step 6: コミット**
+- [x] **Step 6: コミット**
 
 ```bash
 git add poc/001_pose_tracking/keypoints.py poc/001_pose_tracking/estimators.py poc/001_pose_tracking/make_smoke_videos.py
@@ -576,7 +576,7 @@ git commit -m "poc: 共通キーポイントスキーマと YOLO / MediaPipe 推
   - `pipeline.run_model(video_path: Path, model_name: str, out_dir: Path, target_fps: int, on_progress: Callable[[int, int], None]) -> dict` — `out_dir` に `overlay.webm` `keypoints.csv` `confidence.png` `speed.png` `metrics.json` を書き、指標 dict を返す。動画を開けない・フレームが0枚のときは `ValueError`
   - 指標 dict のキー: `frames, duration_s, detection_rate, mean_confidence, valid_keypoint_rate, gap_count, longest_gap_s, jitter, multi_person_rate, processing_fps, per_keypoint_valid_rate`（算出不能な値は `None`）
 
-- [ ] **Step 1: `video_io.py` を書く**
+- [x] **Step 1: `video_io.py` を書く**
 
 `poc/001_pose_tracking/video_io.py`
 
@@ -693,7 +693,7 @@ def create_writer(path: Path, fps: float, width: int, height: int) -> cv2.VideoW
     return writer
 ```
 
-- [ ] **Step 2: `metrics.py` を書く**
+- [x] **Step 2: `metrics.py` を書く**
 
 `poc/001_pose_tracking/metrics.py`
 
@@ -813,7 +813,7 @@ def compute_metrics(
     }
 ```
 
-- [ ] **Step 3: `plots.py` を書く**
+- [x] **Step 3: `plots.py` を書く**
 
 `poc/001_pose_tracking/plots.py`
 
@@ -890,7 +890,7 @@ def save_speed_plot(track: np.ndarray, fps: float, path: Path) -> None:
     plt.close(figure)
 ```
 
-- [ ] **Step 4: `pipeline.py` を書く**
+- [x] **Step 4: `pipeline.py` を書く**
 
 `poc/001_pose_tracking/pipeline.py`
 
@@ -1055,7 +1055,7 @@ def run_model(
     return metrics
 ```
 
-- [ ] **Step 5: 人物あり・なしの合成動画で確認する**
+- [x] **Step 5: 人物あり・なしの合成動画で確認する**
 
 ```bash
 cd poc/001_pose_tracking && uv run python -c "
@@ -1078,7 +1078,7 @@ Expected:
 - `smoke_blank`: `detection_rate` が `0.0`、`mean_confidence` と `jitter` が `null`、`gap_count` が `1`
 - `OpenCV: FFMPEG: tag ... 'VP90' is not supported` の警告は無害なので無視してよい
 
-- [ ] **Step 6: コミット**
+- [x] **Step 6: コミット**
 
 ```bash
 git add poc/001_pose_tracking/video_io.py poc/001_pose_tracking/metrics.py poc/001_pose_tracking/plots.py poc/001_pose_tracking/pipeline.py
@@ -1107,7 +1107,7 @@ git commit -m "poc: 動画からオーバーレイ・指標・グラフを出力
   - `summary.json`: `{"run_id", "video", "created_at", "target_fps", "models": {<model>: <指標 dict>}}`
   - ルート: `GET /`、`POST /jobs`、`GET /jobs/{run_id}/status`、`GET /runs/{run_id}`、静的配信 `/runs-data/`
 
-- [ ] **Step 1: `jobs.py` を書く**
+- [x] **Step 1: `jobs.py` を書く**
 
 `poc/001_pose_tracking/jobs.py`
 
@@ -1222,7 +1222,7 @@ def list_summaries() -> list[dict]:
     return sorted(summaries, key=lambda summary: summary["created_at"], reverse=True)
 ```
 
-- [ ] **Step 2: `app.py` を書く**
+- [x] **Step 2: `app.py` を書く**
 
 `poc/001_pose_tracking/app.py`
 
@@ -1333,7 +1333,7 @@ def show_run(request: Request, run_id: str) -> HTMLResponse:
     return templates.TemplateResponse(request, "run.html", {"summary": summary})
 ```
 
-- [ ] **Step 3: テンプレートを書く**
+- [x] **Step 3: テンプレートを書く**
 
 `poc/001_pose_tracking/templates/base.html`
 
@@ -1486,7 +1486,7 @@ def show_run(request: Request, run_id: str) -> HTMLResponse:
 </div>
 ```
 
-- [ ] **Step 4: サーバーを起動する**
+- [x] **Step 4: サーバーを起動する**
 
 ```bash
 cd poc && uv run uvicorn app:app --app-dir 001_pose_tracking --host 127.0.0.1 --port 8000
@@ -1494,7 +1494,7 @@ cd poc && uv run uvicorn app:app --app-dir 001_pose_tracking --host 127.0.0.1 --
 
 Expected: `Uvicorn running on http://127.0.0.1:8000`（以降の確認は別ターミナル、またはバックグラウンド起動で行う）
 
-- [ ] **Step 5: 正常系を確認する（人物あり動画・両モデル）**
+- [x] **Step 5: 正常系を確認する（人物あり動画・両モデル）**
 
 ```bash
 cd poc/001_pose_tracking
@@ -1515,7 +1515,7 @@ curl -s -o /dev/null -w "%{http_code}\n" http://127.0.0.1:8000/runs/$RUN_ID
 
 Expected: `6`（2モデル × 3ファイル）、`200 video/webm`、`200`
 
-- [ ] **Step 6: 人物なし動画で落ちないことを確認する（Review Focus 2）**
+- [x] **Step 6: 人物なし動画で落ちないことを確認する（Review Focus 2）**
 
 ```bash
 curl -s -F video=@data/smoke_blank.mp4 -F models=yolo -F models=mediapipe http://127.0.0.1:8000/jobs
@@ -1526,7 +1526,7 @@ curl -s http://127.0.0.1:8000/jobs/$RUN_ID/status | grep -A6 "平均信頼度"
 
 Expected: 「平均信頼度」の行に `<td>-</td>` が2つ（両モデル分）出る。サーバーのログに例外が出ていない。
 
-- [ ] **Step 7: 不正な入力でエラーが表示されることを確認する（Review Focus 3）**
+- [x] **Step 7: 不正な入力でエラーが表示されることを確認する（Review Focus 3）**
 
 ```bash
 echo "not a video" > /tmp/fake.txt && cp /tmp/fake.txt /tmp/fake.mp4
@@ -1551,7 +1551,7 @@ Expected:
 - 完了すると指標比較表と、モデルごとのオーバーレイ動画（骨格が人物に重なって再生される）・グラフ2枚が表示される
 - トップに戻ると「過去の結果」に行が増えており、リンクから同じ結果を開ける
 
-- [ ] **Step 9: コミット**
+- [x] **Step 9: コミット**
 
 ```bash
 git add poc/001_pose_tracking/jobs.py poc/001_pose_tracking/app.py poc/001_pose_tracking/templates
@@ -1570,7 +1570,7 @@ git commit -m "poc: 動画アップロードから結果表示までの HTMX 画
 - Consumes: Task 4 の画面、`data/runs/<run_id>/summary.json`
 - Produces: PoC の結論（次フェーズへ進む / モデルを再検討する）
 
-- [ ] **Step 1: README を書く（結果・課題は評価後に埋める）**
+- [x] **Step 1: README を書く（結果・課題は評価後に埋める）**
 
 `poc/001_pose_tracking/README.md`
 
@@ -1651,7 +1651,7 @@ cd poc && uv run python 001_pose_tracking/make_smoke_videos.py
 （評価後に記入する）
 ````
 
-- [ ] **Step 2: コミット**
+- [x] **Step 2: コミット**
 
 ```bash
 git add poc/001_pose_tracking/README.md
@@ -1719,3 +1719,23 @@ git commit -m "poc: 姿勢推定トラッキング PoC の評価結果を記録"
 - [ ] **Step 7: 設計ドキュメントへの反映を判断する**
 
 結論でモデルが決まった場合のみ、`docs/design/TECH_STACK.md` に「動画解析: 採用モデルと理由、PoC 001 への参照」を追記してコミットする。決まらなかった場合はスキップする。
+
+---
+
+## レビュー後の変更（2026-10-03）
+
+全体レビューの指摘を受けて、上記 Task 2〜4 のコードから次の点を変更した。実際のコードは `poc/001_pose_tracking/` を正とする。
+
+| 変更 | 理由 |
+| --- | --- |
+| `keypoints.select_target` を `keypoints.TargetTracker` に置き換えた。前回の体サイズより遠い候補は別人とみなして未検出にし、1秒を超えて見失った後だけ選び直す | 赤ちゃんを1フレーム見失っただけで親に乗り移り、検出率などが親の値になるのを防ぐ |
+| 指標に「追跡対象の選び直し回数」を追加し、追跡対象以外の人物を灰色の点で描画する | 対象が入れ替わった可能性を表と動画の両方で気づけるようにする |
+| 有効キーポイントが5点未満の検出を「未検出」として扱う（`keypoints.usable_persons`） | 枠だけ検出されて関節が取れていないフレームを検出率に数えないため。モデル間の検出しきい値の差の影響も減らす |
+| README に HDR 動画の色の確認、両モデルが同じ人物を追っているかの確認、ジッタと時刻の注意を追記 | iPhone の HDR 動画はトーンマッピングされない可能性があり、モデルではなくデコードが原因で「使えない」と誤判定しうる |
+| `.gitignore` に大文字拡張子（`*.MOV` など）を追加 | iPhone のファイル名は `IMG_xxxx.MOV` で、既存の小文字パターンでは無視されない |
+
+未対応（検証未了・ユーザー操作待ち）:
+
+- Task 1 Step 2: `sudo apt install -y libgles2`
+- Task 4 Step 8: ブラウザでの目視確認
+- Task 5 Step 3 以降: 実動画での評価と README への結果記入

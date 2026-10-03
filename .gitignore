@@ -60,3 +60,7 @@ poc/*/data/*
 !poc/*/data/.gitkeep
 *.task
 *.webm
+*.MOV
+*.MP4
+*.M4V
+*.HEIC

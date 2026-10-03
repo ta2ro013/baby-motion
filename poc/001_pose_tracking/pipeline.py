@@ -14,8 +14,8 @@ from keypoints import (
     CONFIDENCE_THRESHOLD,
     KEYPOINT_NAMES,
     SKELETON_EDGES,
-    person_center,
-    select_target,
+    TargetTracker,
+    usable_persons,
 )
 from metrics import compute_metrics
 from plots import save_confidence_plot, save_speed_plot
@@ -32,6 +32,8 @@ COLOR_RIGHT = (255, 128, 0)
 COLOR_CENTER = (0, 220, 0)
 COLOR_BONE = (255, 255, 255)
 COLOR_WARNING = (0, 0, 255)
+COLOR_OTHER = (160, 160, 160)
+MAX_LOST_SECONDS = 1.0
 
 
 def keypoint_color(index: int) -> tuple[int, int, int]:
@@ -41,17 +43,24 @@ def keypoint_color(index: int) -> tuple[int, int, int]:
     return COLOR_LEFT if KEYPOINT_NAMES[index].startswith("left") else COLOR_RIGHT
 
 
-def draw_overlay(frame: np.ndarray, person: np.ndarray | None) -> np.ndarray:
+def draw_overlay(
+    frame: np.ndarray, person: np.ndarray | None, others: list[np.ndarray]
+) -> np.ndarray:
     """フレームに骨格を描いた画像を返す。
 
     Args:
         frame (np.ndarray): BGR 画像。
         person (np.ndarray | None): 形状 (17, 3) の追跡対象。未検出なら None。
+        others (list[np.ndarray]): 追跡対象以外の人物。灰色の点で描く。
 
     Returns:
         np.ndarray: 描画済みの画像（元の frame は変更しない）。
     """
     canvas = frame.copy()
+    for other in others:
+        for x, y, confidence in other:
+            if confidence >= CONFIDENCE_THRESHOLD:
+                cv2.circle(canvas, (int(round(x)), int(round(y))), 3, COLOR_OTHER, -1)
     if person is None:
         cv2.putText(
             canvas, "NO DETECTION", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.8, COLOR_WARNING, 2
@@ -123,23 +132,23 @@ def run_model(
     writer = None
     rows: list[np.ndarray] = []
     person_counts: list[int] = []
-    previous_center = None
+    tracker = TargetTracker(max_lost_frames=round(out_fps * MAX_LOST_SECONDS))
     inference_seconds = 0.0
     try:
         estimator = ESTIMATORS[model_name](MODELS_DIR)
         for index, frame in iter_frames(capture, stride, MAX_SIDE):
             started = time.perf_counter()
-            persons = estimator.estimate(frame, int(index * 1000 / info.fps))
+            detections = estimator.estimate(frame, int(index * 1000 / info.fps))
             inference_seconds += time.perf_counter() - started
-            target = select_target(persons, previous_center)
-            if target is not None:
-                previous_center = person_center(target)
+            persons = usable_persons(detections)
+            target = tracker.update(persons)
+            others = [person for person in persons if person is not target]
             rows.append(target if target is not None else np.full((17, 3), np.nan))
             person_counts.append(len(persons))
             if writer is None:
                 height, width = frame.shape[:2]
                 writer = create_writer(out_dir / "overlay.webm", out_fps, width, height)
-            writer.write(draw_overlay(frame, target))
+            writer.write(draw_overlay(frame, target, others))
             on_progress(len(rows), total)
     finally:
         capture.release()
@@ -153,6 +162,8 @@ def run_model(
     save_keypoints_csv(track, out_fps, out_dir / "keypoints.csv")
     save_confidence_plot(track, out_fps, out_dir / "confidence.png")
     save_speed_plot(track, out_fps, out_dir / "speed.png")
-    metrics = compute_metrics(track, out_fps, inference_seconds, person_counts)
+    metrics = compute_metrics(
+        track, out_fps, inference_seconds, person_counts, tracker.reset_count
+    )
     (out_dir / "metrics.json").write_text(json.dumps(metrics, indent=2), encoding="utf-8")
     return metrics

@@ -20,12 +20,13 @@ RUN_ID_PATTERN = re.compile(r"^[0-9a-f]{32}$")
 METRIC_LABELS = [
     ("frames", "解析フレーム数"),
     ("duration_s", "長さ [秒]"),
-    ("detection_rate", "検出率"),
+    ("detection_rate", "検出率（有効キーポイント5点以上で追跡できたフレーム）"),
     ("mean_confidence", "平均信頼度"),
     ("valid_keypoint_rate", "有効キーポイント率（信頼度 0.5 以上）"),
     ("gap_count", "途切れ回数"),
     ("longest_gap_s", "最長の途切れ [秒]"),
     ("jitter", "ジッタ（体サイズ比、小さいほど滑らか）"),
+    ("target_reset_count", "追跡対象の選び直し回数（1以上なら対象が入れ替わった可能性）"),
     ("multi_person_rate", "複数人が検出されたフレームの割合"),
     ("processing_fps", "推論速度 [フレーム/秒]"),
 ]
