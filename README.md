@@ -1,64 +1,16 @@
 # baby-motion
 
-iPhone app for recording and visualizing a baby's motor development using image and video analysis.
+画像・動画解析を用いて、赤ちゃんの運動発達を記録・可視化する iPhone アプリ。
 
-## Concept
+## コンセプト
 
-`baby-motion` turns everyday baby videos into structured growth records.
+`baby-motion` は、日常の赤ちゃんの動画を構造化された成長記録に変換します。
 
-The app is planned to support:
+以下の機能を予定しています:
 
-- Photo and video recording from iPhone
-- Pose estimation and motion tracking
-- Movement visualization and time-series graphs
-- Comparison with previous recordings
-- AI-generated observational comments
-- Growth timeline by age and milestone
-
-## Initial scope
-
-The first technical milestone is to validate whether pose estimation works reliably enough on baby movement videos, especially rolling over.
-
-### PoC flow
-
-```text
-Baby video
-   ↓
-Frame extraction
-   ↓
-Pose estimation
-   ↓
-Keypoint tracking
-   ↓
-Movement features
-   ↓
-Visualization / analysis
-```
-
-## Planned architecture
-
-- iOS: Swift / SwiftUI
-- Backend: Python / FastAPI
-- Video analysis: TBD (MediaPipe, MoveNet, Apple Vision, etc.)
-- Storage / Cloud: TBD
-- AI comments: LLM-based generation from structured movement analysis
-
-## Development phases
-
-1. Pose estimation PoC
-2. Motion analysis
-3. Backend API
-4. iPhone MVP
-5. AI-generated comments
-6. Growth visualization
-7. Timeline and historical comparison
-
-## Privacy
-
-This repository must not contain real baby photos, videos, personal information, credentials, or production data.
-
-Use synthetic or explicitly non-sensitive sample data for development and testing.
-
-## Status
-
-Early prototype / technical validation.
+- iPhone での写真・動画の撮影
+- 姿勢推定とモーショントラッキング
+- 動きの可視化と時系列グラフ
+- 過去の記録との比較
+- AI による観察コメントの生成
+- 月齢・マイルストーン別の成長タイムライン

@@ -1,3 +1,6 @@
+.agents/
+.claude/skills/
+
 # macOS
 .DS_Store
 

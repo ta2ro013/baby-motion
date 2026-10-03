@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run *)",
+      "Bash(npm install *)",
+      "Bash(uv *)",
+      "Bash(git commit *)",
+      "Edit",
+      "Read",
+      "Write"
+    ],
+    "ask": [
+      "Bash(uv tool install *)",
+      "Bash(npm install -g *)"
+    ],
+    "deny": [
+      "Read(./.env)"
+    ]
+  },
+  "plansDirectory": "docs/plans"
+}
