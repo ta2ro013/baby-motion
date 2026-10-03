@@ -1,0 +1,47 @@
+<div id="job">
+  <h2>結果: {{ summary.video }}</h2>
+  <p>
+    {{ summary.created_at }} / 解析フレームレートの目標 {{ summary.target_fps }} fps /
+    <a href="/runs/{{ summary.run_id }}">この結果の固定 URL</a>
+  </p>
+  <table>
+    <tr>
+      <th>指標</th>
+      {% for name in summary.models %}<th>{{ name }}</th>{% endfor %}
+    </tr>
+    {% for key, label in METRIC_LABELS %}
+    <tr>
+      <td>{{ label }}</td>
+      {% for name, metrics in summary.models.items() %}
+      <td>{{ metrics[key] if metrics[key] is not none else "-" }}</td>
+      {% endfor %}
+    </tr>
+    {% endfor %}
+  </table>
+  <p class="legend">
+    <span style="color: #00dc00">● 鼻</span>
+    <span style="color: #ffa500">● 左</span>
+    <span style="color: #0080ff">● 右</span>
+    （信頼度 0.5 未満の点は描画しない）
+  </p>
+  <div class="models">
+    {% for name, metrics in summary.models.items() %}
+    {% set base = "/runs-data/" ~ summary.run_id ~ "/" ~ name %}
+    <section>
+      <h3>{{ name }}</h3>
+      <video src="{{ base }}/overlay.webm" controls loop muted playsinline></video>
+      <img src="{{ base }}/confidence.png" alt="{{ name }} の信頼度の推移">
+      <img src="{{ base }}/speed.png" alt="{{ name }} の手首・足首の速度">
+      <details>
+        <summary>キーポイント別の有効率</summary>
+        <table>
+          {% for keypoint, rate in metrics.per_keypoint_valid_rate.items() %}
+          <tr><td>{{ keypoint }}</td><td>{{ rate }}</td></tr>
+          {% endfor %}
+        </table>
+      </details>
+      <p><a href="{{ base }}/keypoints.csv">keypoints.csv</a></p>
+    </section>
+    {% endfor %}
+  </div>
+</div>

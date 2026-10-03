@@ -1,0 +1,7 @@
+{% if job.status == "error" %}
+<div id="job" class="error">エラー: {{ job.error }}</div>
+{% else %}
+<div id="job" hx-get="/jobs/{{ run_id }}/status" hx-trigger="every 1s" hx-swap="outerHTML">
+  解析中… {{ job.progress }}
+</div>
+{% endif %}

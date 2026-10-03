@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PoC 001: 姿勢推定トラッキング</title>
+  <script src="https://unpkg.com/htmx.org@2.0.4"></script>
+  <style>
+    body { font-family: sans-serif; max-width: 1200px; margin: 0 auto; padding: 16px; }
+    table { border-collapse: collapse; margin: 8px 0; }
+    th, td { border: 1px solid #ccc; padding: 4px 10px; text-align: left; }
+    form > * { margin: 6px 0; }
+    .models { display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 16px; }
+    .models video, .models img { width: 100%; }
+    .error { color: #b00020; font-weight: bold; }
+    .legend span { margin-right: 12px; }
+  </style>
+</head>
+<body>
+  <h1><a href="/">PoC 001: 姿勢推定トラッキング</a></h1>
+  {% block content %}{% endblock %}
+</body>
+</html>

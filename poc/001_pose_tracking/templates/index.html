@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block content %}
+<form hx-post="/jobs" hx-encoding="multipart/form-data" hx-target="#job" hx-swap="outerHTML"
+      hx-disabled-elt="find button">
+  <div>
+    <label>動画（mp4 / mov / m4v / webm）
+      <input type="file" name="video" accept="video/*,.mov,.m4v" required>
+    </label>
+  </div>
+  <div>
+    <label>解析フレームレートの目標
+      <select name="target_fps">
+        <option value="10">10 fps</option>
+        <option value="15" selected>15 fps</option>
+        <option value="30">30 fps</option>
+      </select>
+    </label>
+  </div>
+  <div>
+    モデル:
+    {% for model in models %}
+    <label><input type="checkbox" name="models" value="{{ model }}" checked> {{ model }}</label>
+    {% endfor %}
+  </div>
+  <button type="submit">解析する</button>
+</form>
+
+<div id="job"></div>
+
+<h2>過去の結果</h2>
+{% if runs %}
+<table>
+  <tr><th>日時</th><th>動画</th><th>モデル</th></tr>
+  {% for run in runs %}
+  <tr>
+    <td>{{ run.created_at }}</td>
+    <td><a href="/runs/{{ run.run_id }}">{{ run.video }}</a></td>
+    <td>{{ run.models | join(", ") }}</td>
+  </tr>
+  {% endfor %}
+</table>
+{% else %}
+<p>まだ結果はありません。</p>
+{% endif %}
+{% endblock %}
