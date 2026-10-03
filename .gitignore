@@ -54,3 +54,9 @@ models/
 
 # Logs
 *.log
+
+# PoC data (videos, run outputs, model files)
+poc/*/data/*
+!poc/*/data/.gitkeep
+*.task
+*.webm
